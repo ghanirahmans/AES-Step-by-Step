@@ -1,14 +1,12 @@
 # api/index.py
-# VERSI FINAL: Menggunakan relative import (.) untuk mengatasi ModuleNotFoundError di Vercel.
+# VERSI FINAL: Menambahkan JavaScript untuk form dinamis dan panduan.
 
 import sys
 import io
 import re
 from flask import Flask, render_template_string, request
 
-# ======================================================================
-# BAGIAN YANG DIPERBAIKI: Menggunakan Relative Import (tanda titik di depan)
-# ======================================================================
+# Impor semua fungsi dari modul AES yang ada di folder yang sama
 from .aes_key_schedule import key_schedule_explain
 from .aes_sub_bytes import sub_bytes_explain
 from .aes_shift_rows import shift_rows_explain
@@ -23,14 +21,13 @@ def run_aes_function(func, *args):
     old_stdout = sys.stdout
     sys.stdout = captured_output = io.StringIO()
     try:
-        func(*args, doc=None) # Kita tidak membuat docx di web
+        func(*args, doc=None)
     except Exception as e:
         print(f"Terjadi error: {e}")
     finally:
         sys.stdout = old_stdout
     
     output_str = captured_output.getvalue()
-    # Hapus ANSI color codes dari colorama
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
     output_str = ansi_escape.sub('', output_str)
     return output_str
@@ -52,26 +49,38 @@ HTML_TEMPLATE = """
         button { background-color: #007BFF; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 16px; }
         button:hover { background-color: #0056b3; }
         pre { background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; }
+        .info { background-color: #e7f3fe; border-left: 6px solid #2196F3; padding: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>AES Step-by-Step Online</h1>
+        
+        <div class="info">
+            <h3>Cara Penggunaan</h3>
+            <p>1. Pilih jenis operasi AES yang ingin diuji.</p>
+            <p>2. Masukkan nilai <b>State</b> atau <b>Kunci Awal</b> dalam format <b>32 karakter heksadesimal</b> (contoh: 5BFE0700...).</p>
+            <p>3. Jika memilih "Uji AddRoundKey", kolom isian kedua akan muncul untuk <b>Round Key</b>.</p>
+            <p>4. Klik "Jalankan" untuk melihat hasil proses langkah demi langkah.</p>
+        </div>
+
         <form method="post">
             <h2>Pilih Operasi</h2>
-            <select name="operation" id="operation">
+            <select name="operation" id="operationSelect" onchange="toggleInput2()">
                 <option value="mix_columns">Uji MixColumns</option>
-                <option value="add_round_key">Uji AddRoundKey</option>
                 <option value="sub_bytes">Uji SubBytes</option>
                 <option value="shift_rows">Uji ShiftRows</option>
                 <option value="key_schedule">Uji Key Schedule</option>
+                <option value="add_round_key">Uji AddRoundKey</option>
             </select>
-            
+            <br>
             <label for="input1">Input 1 (State / Kunci Awal):</label>
             <input type="text" id="input1" name="input1" placeholder="cth: 5BFE07003BAD5909F2CBFC053100D6C5" required>
 
-            <label for="input2">Input 2 (Round Key, hanya untuk AddRoundKey):</label>
-            <input type="text" id="input2" name="input2" placeholder="cth: A088232A851ED034B0018974B0012B5E">
+            <div id="input2-container" style="display: none;">
+                <label for="input2">Input 2 (Round Key):</label>
+                <input type="text" id="input2" name="input2" placeholder="cth: A088232A851ED034B0018974B0012B5E">
+            </div>
 
             <button type="submit">Jalankan</button>
         </form>
@@ -81,6 +90,24 @@ HTML_TEMPLATE = """
         <pre>{{ result }}</pre>
         {% endif %}
     </div>
+
+    <script>
+        function toggleInput2() {
+            var operationSelect = document.getElementById('operationSelect');
+            var input2Container = document.getElementById('input2-container');
+            var input2 = document.getElementById('input2');
+
+            if (operationSelect.value === 'add_round_key') {
+                input2Container.style.display = 'block';
+                input2.required = true;
+            } else {
+                input2Container.style.display = 'none';
+                input2.required = false;
+            }
+        }
+        // Panggil fungsi saat halaman pertama kali dimuat
+        window.onload = toggleInput2;
+    </script>
 </body>
 </html>
 """
