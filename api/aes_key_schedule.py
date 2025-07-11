@@ -1,12 +1,14 @@
-# aes_key_schedule.py
+# api/aes_key_schedule.py
 import time
 from colorama import Fore
-from aes_constants import S_BOX, RCON
-from aes_reporting import (
+# DIUBAH: Gunakan relative import
+from .aes_constants import S_BOX, RCON
+from .aes_reporting import (
     print_matrix, add_matrix_to_doc, add_bold_paragraph,
     add_calculation_paragraph, print_interim_matrix
 )
 
+# ... sisa kode di file ini sama persis ...
 def key_schedule_explain(initial_key_hex, doc):
     print(f"\n{Fore.YELLOW}===== PROCESS KEY SCHEDULE =====");
     if doc: doc.add_heading("Process Key Schedule", level=2)

@@ -1,8 +1,10 @@
-# aes_shift_rows.py
+# api/aes_shift_rows.py
 import time
 from colorama import Fore
-from aes_reporting import print_matrix, add_matrix_to_doc, add_calculation_paragraph
+# DIUBAH: Gunakan relative import
+from .aes_reporting import print_matrix, add_matrix_to_doc, add_calculation_paragraph
 
+# ... sisa kode di file ini sama persis ...
 def shift_rows_explain(state_hex, doc):
     print(f"\n{Fore.MAGENTA}--- Steps: ShiftRows ---");
     if doc: doc.add_heading("Steps: ShiftRows", level=3)

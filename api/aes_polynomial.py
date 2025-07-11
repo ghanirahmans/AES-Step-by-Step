@@ -1,13 +1,14 @@
-# aes_polynomial.py
-# VERSI DEFINITIF FINAL 2: Menyesuaikan pemanggilan fungsi laporan.
+# api/aes_polynomial.py
 import time
 from colorama import Fore
 from docx.shared import Pt
-from aes_reporting import (
+# DIUBAH: Gunakan relative import
+from .aes_reporting import (
     add_poly_text_to_paragraph, add_single_term_to_para,
     add_bold_paragraph, add_calculation_paragraph
 )
 
+# ... sisa kode di file ini sama persis ...
 def byte_to_poly_str(poly_val):
     if poly_val == 0: return "0"
     terms = []
@@ -27,17 +28,18 @@ def poly_multiply(poly1, poly2):
 def explain_gmul_poly(a, b, doc):
     poly_a_str, poly_b_str = byte_to_poly_str(a), byte_to_poly_str(b)
 
+    # Menyiapkan teks untuk header
     header_text = f"{a:02X} = {a:08b} = {poly_a_str}\n{b:02X} = {b:08b} = {poly_b_str}"
     print(f"      {Fore.CYAN}{header_text}")
     if doc:
-        p = doc.add_paragraph(); p.paragraph_format.left_indent = Pt(18)
+        p = doc.add_paragraph()
         add_poly_text_to_paragraph(p, header_text)
 
     raw_product = poly_multiply(a, b)
     mult_result_text = f"{a:02X} * {b:02X} = {byte_to_poly_str(raw_product)}"
     print(f"      {mult_result_text}")
     if doc:
-        p_mult = doc.add_paragraph(); p_mult.paragraph_format.left_indent = Pt(18)
+        p_mult = doc.add_paragraph()
         add_poly_text_to_paragraph(p_mult, mult_result_text)
 
     if raw_product < 0x100:
@@ -50,7 +52,7 @@ def explain_gmul_poly(a, b, doc):
 
         info_text = f"{byte_to_poly_str(highest_power_term)} is reduced by {byte_to_poly_str(reducer_poly)}"
         print(f"      {Fore.YELLOW}{info_text}")
-        if doc: p_info = doc.add_paragraph(); p_info.add_run(info_text).italic = True; p_info.paragraph_format.left_indent = Pt(18)
+        if doc: doc.add_paragraph().add_run(info_text).italic = True
 
         terms1_str = byte_to_poly_str(remaining_terms_poly)
         terms2_str = byte_to_poly_str(reducer_poly)
@@ -79,9 +81,9 @@ def explain_gmul_poly(a, b, doc):
     print(f"      {final_text}")
     print(f"      {Fore.GREEN}{final_text_full}\n")
     if doc:
-        p_final = doc.add_paragraph(); p_final.paragraph_format.left_indent = Pt(18)
+        p_final = doc.add_paragraph()
         add_poly_text_to_paragraph(p_final, final_text)
-        p_full = doc.add_paragraph(); p_full.paragraph_format.left_indent = Pt(18)
+        p_full = doc.add_paragraph()
         add_poly_text_to_paragraph(p_full, final_text_full)
 
     time.sleep(0.01)

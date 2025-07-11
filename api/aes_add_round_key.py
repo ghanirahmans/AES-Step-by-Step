@@ -1,8 +1,10 @@
-# aes_add_round_key.py
+# api/aes_add_round_key.py
 import time
 from colorama import Fore
-from aes_reporting import print_matrix, add_matrix_to_doc, add_calculation_paragraph
+# DIUBAH: Gunakan relative import
+from .aes_reporting import print_matrix, add_matrix_to_doc, add_calculation_paragraph
 
+# ... sisa kode di file ini sama persis ...
 def add_round_key_explain(state_hex, key_hex, round_num, doc):
     print(f"\n{Fore.MAGENTA}--- Steps: AddRoundKey ---")
     if doc: doc.add_heading(f"Steps: AddRoundKey", level=3)
@@ -17,6 +19,5 @@ def add_round_key_explain(state_hex, key_hex, round_num, doc):
         text_doc = f"{state_bytes[i]:02X} \u2295 {key_bytes[i]:02X} = {res:02X} ({state_bytes[i]:08b} \u2295 {key_bytes[i]:08b} = {res:08b})"
         print(f"  {Fore.GREEN}{text_doc}");add_calculation_paragraph(doc,text_doc);time.sleep(0.05)
     result_hex = result_bytes.hex()
-    print_matrix(f"Result of AddRoundKey Round {round_num}", result_hex)
-    add_matrix_to_doc(doc, f"Result of AddRoundKey Round {round_num}", result_hex)
+    print_matrix(f"Result of AddRoundKey Round {round_num}", result_hex); add_matrix_to_doc(doc, f"Result of AddRoundKey Round {round_num}", result_hex)
     return result_hex
