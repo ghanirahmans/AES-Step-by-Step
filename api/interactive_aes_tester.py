@@ -1,6 +1,6 @@
 # interactive_aes_tester.py
 import time
-from datetime import date, datetime
+from datetime import datetime
 import re
 
 # --- Inisialisasi Pustaka ---
@@ -9,12 +9,8 @@ try:
     init(autoreset=True)
 except ImportError:
     print("Peringatan: library 'colorama' tidak ditemukan. Output tidak akan berwarna.")
-    class AnsiFore:
-        YELLOW = GREEN = MAGENTA = CYAN = BLUE = RED = WHITE = ""
-    class AnsiStyle:
-        RESET_ALL = ""
-    Fore = AnsiFore
-    Style = AnsiStyle
+    class Fore: YELLOW = GREEN = MAGENTA = CYAN = BLUE = RED = WHITE = ""
+    class Style: RESET_ALL = ""
 
 try:
     import docx
@@ -25,13 +21,14 @@ except ImportError:
     DOCX_AVAILABLE = False
     docx = Pt = WD_ALIGN_PARAGRAPH = RGBColor = None
 
-# --- Impor semua fungsi 'explain' dari modul yang ada ---
-from aes_key_schedule import key_schedule_explain
-from aes_sub_bytes import sub_bytes_explain
-from aes_shift_rows import shift_rows_explain
-from aes_mix_columns import mix_columns_poly_explain
-from aes_add_round_key import add_round_key_explain
-from aes_reporting import print_matrix, add_matrix_to_doc
+# === BAGIAN YANG DIPERBAIKI: Gunakan relative import di sini juga ===
+from .aes_key_schedule import key_schedule_explain
+from .aes_sub_bytes import sub_bytes_explain
+from .aes_shift_rows import shift_rows_explain
+from .aes_mix_columns import mix_columns_poly_explain
+from .aes_add_round_key import add_round_key_explain
+from .aes_reporting import print_matrix, add_matrix_to_doc
+# ================================================================
 
 # --- Fungsi Bantuan untuk Validasi Input ---
 def get_validated_hex_input(prompt, length=32):
@@ -47,15 +44,9 @@ def get_validated_hex_input(prompt, length=32):
             print(f"{Fore.RED}Error: Input mengandung karakter yang bukan heksadesimal (0-9, a-f).")
 
 def create_report_document(title):
-    if not DOCX_AVAILABLE or docx is None:
-        return None
+    if not DOCX_AVAILABLE: return None
     doc = docx.Document()
-    style = doc.styles['Normal']
-    font = getattr(style, 'font', None)
-    if font is not None:
-        font.name = 'Times New Roman'
-        if Pt is not None:
-            font.size = Pt(12)
+    style = doc.styles['Normal']; font = style.font; font.name = 'Times New Roman'; font.size = Pt(12)
     doc.add_heading(title, level=1)
     return doc
 
@@ -75,9 +66,8 @@ def aes_full_process():
         
         plaintext_hex, kunci_hex = plaintext_txt.encode('windows-1252').hex(), kunci_txt.encode('windows-1252').hex()
 
-        if doc:
-            p = doc.add_paragraph(); p.add_run('Plaintext: ').bold = True; p.add_run(f"{plaintext_txt} ({plaintext_hex.upper()})")
-            p.add_run('\nKey: ').bold = True; p.add_run(f"{kunci_txt} ({kunci_hex.upper()})")
+        p = doc.add_paragraph(); p.add_run('Plaintext: ').bold = True; p.add_run(f"{plaintext_txt} ({plaintext_hex.upper()})")
+        p.add_run('\nKey: ').bold = True; p.add_run(f"{kunci_txt} ({kunci_hex.upper()})")
 
         print(f"\n{Fore.CYAN}--- Verifikasi Input ---")
         print(f"Plaintext '{plaintext_txt}' dikonversi menjadi Heks: {Fore.YELLOW}{plaintext_hex.upper()}")
@@ -122,11 +112,8 @@ def aes_full_process():
             p = doc.add_paragraph(); p.add_run('Ciphertext: ').bold = True
             p.add_run(state.upper())
             
-        if doc is not None:
-            doc.save(nama_file_laporan)
-            print(f"\n{Fore.GREEN}Laporan berhasil dibuat dan disimpan sebagai '{nama_file_laporan}'")
-        else:
-            print(f"\n{Fore.RED}Laporan tidak dapat dibuat karena library 'python-docx' tidak tersedia.")
+        doc.save(nama_file_laporan)
+        print(f"\n{Fore.GREEN}Laporan berhasil dibuat dan disimpan sebagai '{nama_file_laporan}'")
 
     except ValueError as e: print(f"\n{Fore.RED}Error: {e}")
     except Exception as e: print(f"\n{Fore.RED}Terjadi kesalahan tak terduga: {e}")
@@ -160,32 +147,32 @@ def main_menu():
                 state = get_validated_hex_input("Masukkan State (32 char hex): ")
                 key = get_validated_hex_input("Masukkan Round Key (32 char hex): ")
                 add_round_key_explain(state, key, 0, doc)
-                if doc: doc.save(f"Laporan_Test_AddRoundKey({datetime.now().strftime('%Y%m%d_%H%M%S')}).docx")
+                if doc: doc.save("Laporan_Test_AddRoundKey.docx")
 
             elif choice == '2': # SubBytes
                 doc = create_report_document("Laporan Uji - SubBytes")
                 state = get_validated_hex_input("Masukkan State (32 char hex): ")
                 sub_bytes_explain(state, doc)
-                if doc: doc.save(f"Laporan_Test_SubBytes({datetime.now().strftime('%Y%m%d_%H%M%S')}).docx")
+                if doc: doc.save("Laporan_Test_SubBytes.docx")
 
             elif choice == '3': # ShiftRows
                 doc = create_report_document("Laporan Uji - ShiftRows")
                 state = get_validated_hex_input("Masukkan State (32 char hex): ")
                 shift_rows_explain(state, doc)
-                if doc: doc.save(f"Laporan_Test_ShiftRows({datetime.now().strftime('%Y%m%d_%H%M%S')}).docx")
+                if doc: doc.save("Laporan_Test_ShiftRows.docx")
 
             elif choice == '4': # MixColumns
                 doc = create_report_document("Laporan Uji - MixColumns")
                 state = get_validated_hex_input("Masukkan State (32 char hex): ")
                 mix_columns_poly_explain(state, doc)
-                if doc: doc.save(f"Laporan_Test_MixColumns({datetime.now().strftime('%Y%m%d_%H%M%S')}).docx")
+                if doc: doc.save("Laporan_Test_MixColumns.docx")
 
             elif choice == '5': # Key Schedule
                 doc = create_report_document("Laporan Uji - Key Schedule")
                 key = get_validated_hex_input("Masukkan Kunci Awal (32 char hex): ")
                 key_schedule_explain(key, doc)
-                if doc: doc.save(f"Laporan_Test_KeySchedule({datetime.now().strftime('%Y%m%d_%H%M%S')}).docx")
-
+                if doc: doc.save("Laporan_Test_KeySchedule.docx")
+            
             if DOCX_AVAILABLE: print(f"\n{Fore.GREEN}Laporan uji berhasil disimpan.")
         else:
             print(f"{Fore.RED}Pilihan tidak valid.")

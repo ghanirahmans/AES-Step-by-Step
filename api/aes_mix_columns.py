@@ -1,14 +1,14 @@
-# api/aes_mix_columns.py
+# aes_mix_columns.py
 from colorama import Fore
 # DIUBAH: Gunakan relative import
 from .aes_constants import MIX_COLUMNS_MATRIX
 from .aes_reporting import (
     add_bold_paragraph, add_calculation_paragraph, add_constant_matrix_to_doc,
-    print_constant_matrix, print_matrix, add_matrix_to_doc
+    print_constant_matrix, print_matrix, add_matrix_to_doc,
+    add_poly_text_to_paragraph # <-- FUNGSI YANG LUPA DIIMPOR
 )
 from .aes_polynomial import explain_gmul_poly
 
-# ... sisa kode di file ini sama persis ...
 def mix_columns_poly_explain(state_hex, doc):
     print(f"\n{Fore.MAGENTA}--- Steps: MixColumns ---");
     if doc:
