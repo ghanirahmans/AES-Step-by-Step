@@ -1,5 +1,5 @@
 # api/index.py
-# VERSI FINAL: Menambahkan Desain Responsif untuk tampilan HP.
+# VERSI FINAL: Menambahkan rata kiri untuk hasil di tampilan HP.
 
 import sys
 import io
@@ -107,7 +107,7 @@ HTML_TEMPLATE = """
             border-radius: 4px;
         }
 
-        /* 2. CSS Media Query untuk Tampilan HP */
+        /* CSS Media Query untuk Tampilan HP */
         @media (max-width: 600px) {
             body {
                 margin: 1em;
@@ -121,10 +121,14 @@ HTML_TEMPLATE = """
             }
             input[type="text"], select, button {
                 font-size: 16px;
-                width: 93%; /* Sedikit ruang di sisi */
+                width: 93%;
             }
             button {
                 width: 100%;
+            }
+            /* PERBAIKAN DI SINI: Atur hasil agar rata kiri di HP */
+            pre {
+                text-align: left;
             }
         }
     </style>
