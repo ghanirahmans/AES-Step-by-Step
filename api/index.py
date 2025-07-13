@@ -1,5 +1,5 @@
 # api/index.py
-# VERSI FINAL: Menambahkan rata kiri untuk hasil di tampilan HP.
+# VERSI FINAL: Menghilangkan semua indentasi pada blok hasil untuk membuatnya rata kiri.
 
 import sys
 import io
@@ -28,9 +28,15 @@ def run_aes_function(func, *args):
         sys.stdout = old_stdout
     
     output_str = captured_output.getvalue()
+    # Hapus ANSI color codes dari colorama
     ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
     output_str = ansi_escape.sub('', output_str)
-    return output_str
+
+    # === BAGIAN YANG DIPERBAIKI: Hapus spasi/indentasi di awal setiap baris ===
+    lines = output_str.split('\n')
+    stripped_lines = [line.lstrip() for line in lines]
+    return '\n'.join(stripped_lines)
+    # ======================================================================
 
 
 # Template HTML untuk form dan hasil
@@ -44,7 +50,8 @@ HTML_TEMPLATE = """
     <style>
         body { 
             font-family: sans-serif; 
-            margin: 2em; 
+            margin: 0; 
+            padding: 1em;
             background-color: #f4f4f4; 
             color: #333; 
             line-height: 1.6;
@@ -98,6 +105,7 @@ HTML_TEMPLATE = """
             word-wrap: break-word; 
             font-family: 'Courier New', Courier, monospace;
             font-size: 14px;
+            text-align: left; /* Selalu rata kiri */
         }
         .info { 
             background-color: #e7f3fe; 
@@ -107,28 +115,17 @@ HTML_TEMPLATE = """
             border-radius: 4px;
         }
 
-        /* CSS Media Query untuk Tampilan HP */
         @media (max-width: 600px) {
             body {
-                margin: 1em;
-                font-size: 16px;
+                margin: 0;
+                padding: 0.5em;
             }
             .container {
                 padding: 15px;
+                border-radius: 0;
             }
             h1 {
-                font-size: 1.8em;
-            }
-            input[type="text"], select, button {
-                font-size: 16px;
-                width: 93%;
-            }
-            button {
-                width: 100%;
-            }
-            /* PERBAIKAN DI SINI: Atur hasil agar rata kiri di HP */
-            pre {
-                text-align: left;
+                font-size: 1.5em;
             }
         }
     </style>
