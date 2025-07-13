@@ -1,5 +1,5 @@
 # api/index.py
-# VERSI FINAL: Menambahkan JavaScript untuk form dinamis dan panduan.
+# VERSI FINAL: Menambahkan Desain Responsif untuk tampilan HP.
 
 import sys
 import io
@@ -39,29 +39,105 @@ HTML_TEMPLATE = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AES Step-by-Step Online</title>
     <style>
-        body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1, h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input[type="text"], select { width: 98%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; }
-        button { background-color: #007BFF; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        pre { background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', Courier, monospace; }
-        .info { background-color: #e7f3fe; border-left: 6px solid #2196F3; padding: 10px; margin-top: 20px; }
+        body { 
+            font-family: sans-serif; 
+            margin: 2em; 
+            background-color: #f4f4f4; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
+        h1, h2 { 
+            color: #333; 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 10px; 
+        }
+        label { 
+            display: block; 
+            margin-top: 15px; 
+            font-weight: bold; 
+        }
+        input[type="text"], select { 
+            width: 95%; 
+            padding: 10px; 
+            margin-top: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button { 
+            width: 100%;
+            background-color: #007BFF; 
+            color: white; 
+            padding: 12px 15px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            font-size: 18px; 
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        pre { 
+            background-color: #2d2d2d; 
+            color: #f8f8f2; 
+            padding: 15px; 
+            border-radius: 4px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        .info { 
+            background-color: #e7f3fe; 
+            border-left: 6px solid #2196F3; 
+            padding: 1px 15px; 
+            margin-top: 20px; 
+            border-radius: 4px;
+        }
+
+        /* 2. CSS Media Query untuk Tampilan HP */
+        @media (max-width: 600px) {
+            body {
+                margin: 1em;
+                font-size: 16px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            input[type="text"], select, button {
+                font-size: 16px;
+                width: 93%; /* Sedikit ruang di sisi */
+            }
+            button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>AES Step-by-Step Online</h1>
+        <h1>AES Step-by-Step</h1>
         
         <div class="info">
             <h3>Cara Penggunaan</h3>
             <p>1. Pilih jenis operasi AES yang ingin diuji.</p>
-            <p>2. Masukkan nilai <b>State</b> atau <b>Kunci Awal</b> dalam format <b>32 karakter heksadesimal</b> (contoh: 5BFE0700...).</p>
+            <p>2. Masukkan nilai <b>State</b> atau <b>Kunci Awal</b> dalam format <b>32 karakter heksadesimal</b>.</p>
             <p>3. Jika memilih "Uji AddRoundKey", kolom isian kedua akan muncul untuk <b>Round Key</b>.</p>
-            <p>4. Klik "Jalankan" untuk melihat hasil proses langkah demi langkah.</p>
         </div>
 
         <form method="post">
@@ -73,13 +149,13 @@ HTML_TEMPLATE = """
                 <option value="key_schedule">Uji Key Schedule</option>
                 <option value="add_round_key">Uji AddRoundKey</option>
             </select>
-            <br>
+            
             <label for="input1">Input 1 (State / Kunci Awal):</label>
-            <input type="text" id="input1" name="input1" placeholder="cth: 5BFE07003BAD5909F2CBFC053100D6C5" required>
+            <input type="text" id="input1" name="input1" placeholder="cth: 5BFE0700..." required>
 
             <div id="input2-container" style="display: none;">
                 <label for="input2">Input 2 (Round Key):</label>
-                <input type="text" id="input2" name="input2" placeholder="cth: A088232A851ED034B0018974B0012B5E">
+                <input type="text" id="input2" name="input2" placeholder="cth: A088232A...">
             </div>
 
             <button type="submit">Jalankan</button>
@@ -105,7 +181,6 @@ HTML_TEMPLATE = """
                 input2.required = false;
             }
         }
-        // Panggil fungsi saat halaman pertama kali dimuat
         window.onload = toggleInput2;
     </script>
 </body>
